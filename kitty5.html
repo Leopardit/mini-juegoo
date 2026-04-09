@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Kitty Love 💖</title>
+
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+  background: url("fondo.jpg") no-repeat center center fixed;
+  background-size: cover;
+  font-family: Arial;
+}
+
+/* Kitty */
+#kitty {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 110px;
+}
+
+/* Fresa */
+#fresa {
+  position: absolute;
+  width: 60px;
+  top: 80px;
+}
+
+/* Corazones */
+.corazon {
+  position: absolute;
+  font-size: 22px;
+}
+
+/* Pétalos */
+.petalo {
+  position: absolute;
+  font-size: 20px;
+  animation: caer linear infinite;
+}
+
+@keyframes caer {
+  0% { transform: translateY(-50px); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Mensaje */
+#mensaje {
+  position: absolute;
+  top: 30%;
+  width: 90%;
+  left: 5%;
+  display: none;
+  font-size: 22px;
+  background: rgba(255,255,255,0.95);
+  padding: 20px;
+  border-radius: 25px;
+  text-align: center;
+}
+
+/* Botones */
+#botones {
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+button {
+  padding: 12px 18px;
+  margin: 5px;
+  border: none;
+  border-radius: 20px;
+  background: #ff8fcf;
+  font-size: 15px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<img id="kitty" src="kitty.png">
+<img id="fresa" src="fresa.png">
+
+<div id="mensaje">
+  Mi amorcito bebe quieres compartir foto de perfil conmigo ericito? ❤️🥺🫶🏻💌 <br><br>
+  
+  <button onclick="respuesta()">chii amor 💕</button>
+</div>
+
+<div id="botones">
+  <button onclick="activar()">Activar 💘</button>
+  <button onclick="disparoManual()">Disparar corazones 💖</button>
+</div>
+
+<audio id="musica" loop>
+  <source src="https://www.dropbox.com/scl/fi/hv6ho4aw2bheio9nkq6iv/videoplayback-4.m4a?rlkey=90weosqm9pg8pwjaxk28m0g8j&st=4wz3u69h&dl=0" type="audio/mp4">
+</audio>
+
+<script>
+document.addEventListener("click", function() {
+  document.getElementById("musica").play();
+});
+</script>
+
+<script>
+let kitty = document.getElementById("kitty");
+let fresa = document.getElementById("fresa");
+let mensaje = document.getElementById("mensaje");
+let musica = document.getElementById("musica");
+
+let x = 0;
+let direccion = 5; // ⚡ MÁS RÁPIDA
+let activo = false;
+
+/* Activar */
+function activar() {
+  activo = true;
+  musica.play().catch(()=>{});
+}
+
+/* Movimiento rápido */
+function mover() {
+  if (!activo) return;
+
+  x += direccion;
+
+  if (x > window.innerWidth - 110 || x < 0) {
+    direccion *= -1;
+  }
+
+  kitty.style.left = x + "px";
+}
+setInterval(mover, 20);
+
+/* Disparo */
+function disparoManual() {
+  for (let i = 0; i < 6; i++) {
+    setTimeout(() => {
+      crearCorazon(x + 40 + Math.random()*20, 100);
+    }, i * 80);
+  }
+}
+
+function crearCorazon(posX, posY) {
+  let c = document.createElement("div");
+  c.className = "corazon";
+  c.innerHTML = "💖";
+
+  c.style.left = posX + "px";
+  c.style.bottom = posY + "px";
+
+  document.body.appendChild(c);
+
+  let y = posY;
+
+  let anim = setInterval(() => {
+    y += 6;
+    c.style.bottom = y + "px";
+
+    detectarCorazon(c);
+
+    if (y > window.innerHeight) {
+      c.remove();
+      clearInterval(anim);
+    }
+  }, 25);
+}
+
+/* 💖 DETECTAR COLISIÓN */
+function detectarCorazon(corazon) {
+  let c = corazon.getBoundingClientRect();
+  let f = fresa.getBoundingClientRect();
+
+  if (
+    c.left < f.right &&
+    c.right > f.left &&
+    c.top < f.bottom &&
+    c.bottom > f.top
+  ) {
+    mensaje.style.display = "block";
+  }
+}
+
+/* Fresa */
+function moverFresa() {
+  let pos = Math.random() * (window.innerWidth - 60);
+  fresa.style.left = pos + "px";
+}
+setInterval(moverFresa, 2000);
+
+/* 💕 RESPUESTA + WHATSAPP */
+function respuesta() {
+  mensaje.innerHTML = "AAAA 💖 sabía que dirías que chiiiii mi ericito bebe 😭💘";
+
+  // 💥 explosión
+  for (let i = 0; i < 30; i++) {
+    let ex = document.createElement("div");
+    ex.innerHTML = "💖";
+    ex.style.position = "absolute";
+    ex.style.left = Math.random()*window.innerWidth+"px";
+    ex.style.top = Math.random()*window.innerHeight+"px";
+    ex.style.fontSize = "30px";
+
+    document.body.appendChild(ex);
+    setTimeout(() => ex.remove(), 1000);
+  }
+
+  // 📲 WHATSAPP AUTOMÁTICO
+  setTimeout(() => {
+    let numero = "+52 5584779790"; // 👈 
+    let mensajeWA = "Mi amor 💖 ahora ya somos foto de perfil juntos 🥺🫶🏻";
+
+    let url = "https://wa.me/" + numero + "?text=" + encodeURIComponent(mensajeWA);
+    window.open(url, "_blank");
+  }, 1500);
+}
+
+/* Pétalos */
+function crearPetalos() {
+  let p = document.createElement("div");
+  p.className = "petalo";
+  p.innerHTML = "🌸";
+
+  p.style.left = Math.random() * window.innerWidth + "px";
+  p.style.animationDuration = (3 + Math.random() * 5) + "s";
+
+  document.body.appendChild(p);
+
+  setTimeout(() => p.remove(), 8000);
+}
+setInterval(crearPetalos, 300);
+</script>
+
+</body>
+</html>
